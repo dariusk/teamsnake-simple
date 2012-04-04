@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Chain</title>
+  <script src="/socket.io/socket.io.js"></script>
+	<script type="text/javascript" src="js/paper.js"></script>
+	<script type="text/javascript" src="js/keyDecode.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<script type="text/paperscript" canvas="canvas">
+		// Adapted from the following Processing example:
+		// http://processing.org/learning/topics/follow3.html
+
+      var socket = io.connect('http://10.0.0.102');
+
+    var speed = 1;
+		var path = new Path();
+		path.style = {
+			strokeColor: '#E4141B',
+			strokeWidth: 20,
+			strokeCap: 'round'
+		};
+    var velx = 0;
+    var vely = 0;
+    var vectors = {};
+		var size = 15;
+		var segments = path.segments;
+		var start = view.center / [10, 1];
+		for (var i = 0; i < size; i++)
+			path.add(start + new Point(i * 50, 0));
+
+socket.on('velchange',function(data) {
+  console.log(data.client);
+  vectors[data.client] = [data.velx, data.vely];
+});
+  
+
+  function onFrame(e) {
+    velx = 0;
+    vely = 0;
+    for(var i in vectors) {
+      velx += vectors[i][0];
+      vely += vectors[i][1];
+    }
+
+    segments[0].point.y += vely;
+    segments[0].point.x += velx;
+    for (var i = 0; i < size - 1; i++) {
+      var nextSegment = segments[i + 1];
+      var position = path.segments[i].point;
+      var angle = (position - nextSegment.point).angle;
+      var vector = new Point({ angle: angle, length: 35 });
+      nextSegment.point = position - vector;
+    }
+    path.smooth();
+   }
+  
+
+  $(function() {
+      $(document).keydown(function(e) {
+        console.log(keyDecode(e));
+        key = keyDecode(e);
+        if (key == "up") {
+          vely -= speed;
+
+        }
+        if (key == "down") {
+          vely += speed;
+        }
+        if (key == "right") {
+          velx += speed;
+        }
+        if (key == "left") {
+          velx -= speed;
+        }
+
+
+        
+        if (!e.shiftKey && !e.ctrlKey) {
+          e.preventDefault();
+        }
+      });
+    });
+
+		function onMouseDown(event) {
+			path.fullySelected = true;
+			path.strokeColor = '#e08285';
+		}
+
+		function onMouseUp(event) {
+			path.fullySelected = false;
+			path.strokeColor = '#e4141b';
+		}
+	</script>
+</head>
+<body>
+	<canvas id="canvas" resize></canvas>
+</body>
+</html>

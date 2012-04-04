@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      var socket = io.connect('http://10.0.0.102');
+      var clientnum = -1;
+      socket.on('clientnum', function (data) {
+        console.log(data);
+        clientnum = data;
+      }); 
+    </script>
+  </head>
+  <button onclick="socket.emit('up',clientnum)">UP</button>
+  <button onclick="socket.emit('down',clientnum)">DOWN</button>
+  <button onclick="socket.emit('left',clientnum)">LEFT</button>
+  <button onclick="socket.emit('right',clientnum)">RIGHT</button>
+</html>
