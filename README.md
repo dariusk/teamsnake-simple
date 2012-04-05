@@ -6,5 +6,5 @@ Steps to run:
 4. > npm install express
 5. > sudo node server.js [may need to turn off Apache or any other service running on port 80]
 
-Check out http://localhost for the main display, fire up http://localhost/client.html for the client to control the snake.
+Check out http://localhost for the main display, fire up http://localhost/client.html for the client to control the snake. Load up multiple clients to get a sense of the voting mechanic.
 
